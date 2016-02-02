@@ -11,7 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.squareup.picasso.Picasso;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,7 +119,7 @@ public class ItemFragment extends Fragment {
 
     public static class ItemAdapter extends RecyclerView.Adapter<ItemViewHolder>{
         private List<RecyclerItem> mItems;
-        private Picasso mPicasso;
+        private RequestManager mPicasso;
         private LayoutInflater mInflater;
         private OnImageClickListner mListener;
 
@@ -132,8 +134,13 @@ public class ItemFragment extends Fragment {
         public ItemAdapter(Activity activity) {
             mItems = new ArrayList<>();
             mInflater = activity.getLayoutInflater();
-            mPicasso = Picasso.with(activity);
-            for(int i = 0;i< new Random().nextInt(20);i++){
+            mPicasso = Glide.with(activity);
+            Random random = new Random();
+            int total = random.nextInt(20);
+            while (total<1){
+                total = random.nextInt(20);
+            }
+            for(int i = 0; i< total; i++){
                 mItems.add(new RecyclerItem(i));
             }
         }
@@ -148,8 +155,8 @@ public class ItemFragment extends Fragment {
         @Override
         public void onBindViewHolder(ItemViewHolder holder, int position) {
             mPicasso.load(mItems.get(position).thumbUrl).placeholder(R.drawable.conent_placeholder).into(holder.image);
-            holder.image.setTag(mItems.get(position).thumbUrl);
-            holder.image.setOnClickListener(new View.OnClickListener() {
+            holder.root.setTag(mItems.get(position).thumbUrl);
+            holder.root.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if(mListener != null) {

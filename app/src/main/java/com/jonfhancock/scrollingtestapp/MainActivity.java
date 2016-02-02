@@ -11,6 +11,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +21,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 
 
 public class MainActivity extends ActionBarActivity implements ItemFragment.OnFragmentInteractionListener {
@@ -44,6 +47,7 @@ public class MainActivity extends ActionBarActivity implements ItemFragment.OnFr
         mContent = getWindow().findViewById(Window.ID_ANDROID_CONTENT);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
+        setTitle(null);
         mHeader = findViewById(R.id.header);
         mHeroImage = (ImageView) findViewById(R.id.hero_image);
         mIndicator = (SlidingTabLayout) findViewById(R.id.indicator);
@@ -54,7 +58,7 @@ public class MainActivity extends ActionBarActivity implements ItemFragment.OnFr
 
         mPager.setAdapter(mPagerAdapter);
         mIndicator.setViewPager(mPager);
-        Picasso mPicasso = Picasso.with(this);
+        RequestManager mPicasso = Glide.with(this);
         mPicasso.load("http://lorempixel.com/1280/500/?1").placeholder(R.drawable.hero_placeholder).into(mHeroImage);
 
         final GestureDetectorCompat detector = new GestureDetectorCompat(this, new MyGestureListener());
@@ -98,7 +102,7 @@ public class MainActivity extends ActionBarActivity implements ItemFragment.OnFr
             int scroll_diff = (int) (e1.getY() - e2.getY());
             int toolbarTranslationY = 0;
             int headerheight;
-            int toolbarTranslucent = Color.parseColor("#55FFFFFF");
+            int toolbarTranslucent = adjustAlpha(getResources().getColor(android.R.color.holo_blue_dark),0f);
             int toolbarColor = Color.parseColor("#55FFFFFF");
             int finalToolbarColor = getResources().getColor(android.R.color.holo_blue_dark);
             boolean movingUp = scroll_diff > 0;
@@ -159,7 +163,14 @@ public class MainActivity extends ActionBarActivity implements ItemFragment.OnFr
             return true;
         }
     }
-
+    public int adjustAlpha(int color, float factor) {
+        int alpha = Math.round(Color.alpha(color) * factor);
+        int red = Color.red(color);
+        int green = Color.green(color);
+        int blue = Color.blue(color);
+        int argb = Color.argb(alpha, red, green, blue);
+        return argb;
+    }
     private void updateViews(int targetTranslationY, int toolbarTranslationY, int headerheight,int toolbarColor) {
         mToolbar.setTranslationY(toolbarTranslationY);
         mToolbar.setBackgroundColor(toolbarColor);
@@ -172,7 +183,27 @@ public class MainActivity extends ActionBarActivity implements ItemFragment.OnFr
         mContainer.setLayoutParams(rootParams);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main2, menu);
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
     @Override
     public void onFragmentInteraction(String uri) {
         Toast.makeText(this, "on clicked " + uri, Toast.LENGTH_SHORT).show();
